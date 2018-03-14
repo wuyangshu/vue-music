@@ -30,7 +30,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 
   // these devServer options should be customized in /config/index.js
   devServer: {
-    before(app) {
+    after(app) {
       app.get('/api/getDiscList', function (req, res) {
         var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
         axios.get(url, {
@@ -45,7 +45,21 @@ const devWebpackConfig = merge(baseWebpackConfig, {
           console.log(e)
         })
       })
-    },
+    app.get('/lyric', function (req, res) {
+      var url = 'http://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric.fcg'
+      axios.get(url, {
+        headers: {
+          referer: `http://i.y.qq.com/v8/playsong.html?ADTAG=newyqq.song&songmid=${req.query.musicid}`,
+          host: 'c.y.qq.com'
+        },
+        params: req.query
+      }).then((response) => {
+        res.json(response.data)
+      }).catch((e) => {
+        console.log(e)
+      })
+    })
+  },
     clientLogLevel: 'warning',
     historyApiFallback: {
       rewrites: [
@@ -108,11 +122,8 @@ module.exports = new Promise((resolve, reject) => {
         compilationSuccessInfo: {
           messages: [`Your application is running here: http://${devWebpackConfig.devServer.host}:${port}`],
         },
-        onErrors: config.dev.notifyOnErrors
-        ? utils.createNotifierCallback()
-        : undefined
+        onErrors: config.dev.notifyOnErrors ? utils.createNotifierCallback() : undefined
       }))
-
       resolve(devWebpackConfig)
     }
   })

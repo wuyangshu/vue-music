@@ -5,6 +5,9 @@ import router from './router'
 import store from './store'
 import fastclick from 'fastclick'
 import vueLazyLoad from 'vue-lazyload'
+// import { SET_PLAY_HISTORY, SET_FAVORITE_LIST } from './store/mutation-types'
+// import { loadPlay, loadFavorite } from 'common/js/cache'
+import { processSongsUrl } from 'common/js/song'
 
 import '@/common/stylus/index.styl'
 

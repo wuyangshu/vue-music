@@ -17,7 +17,7 @@
     <scroll :data="songs" @scroll="scroll"
             :listen-scroll="listenScroll" :probe-type="probeType" class="list" ref="list">
       <div class="song-list-wrapper">
-        <song-list :songs="songs" @select="selectItem"></song-list>
+        <song-list :rank="rank" :songs="songs" @select="selectItem"></song-list>
       </div>
       <div v-show="!songs.length" class="loading-container">
         <loading></loading>
@@ -26,9 +26,9 @@
   </div>
 </template>>
 <script>
-  import Scroll from '../../base/scroll/scroll'
-  import Loading from '../../base/loading/loading'
-  import SongList from '../../base/song-list/song-list'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
+  import SongList from 'base/song-list/song-list'
   import {prefixStyle} from 'common/js/dom'
   import {playlistMixin} from 'common/js/mixin'
   import {mapActions} from 'vuex'
@@ -51,6 +51,10 @@ export default {
       title: {
           type: String,
           default: ''
+      },
+      rank: {
+        type: Boolean,
+        default: false
       }
   },
   data() {
@@ -101,33 +105,34 @@ export default {
       ])
   },
   watch: {
-    scrollY(newY) {
-      let translateY = Math.max(this.minTranslateY, newY)
-      let zIndex = 0
-      let scale = 1
-      let blur = 0
-      this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
-      const percent = Math.abs(newY / this.imageHeight)
-      if(newY > 0) {
-        scale = 1 + percent
-        zIndex = 10
-      }else {
-        blur = Math.min(20 * percent, 20)
+    scrollY(newVal) {
+        let translateY = Math.max(this.minTransalteY, newVal)
+        let scale = 1
+        let zIndex = 0
+        let blur = 0
+        const percent = Math.abs(newVal / this.imageHeight)
+        if (newVal > 0) {
+          scale = 1 + percent
+          zIndex = 10
+        } else {
+          blur = Math.min(20, percent * 20)
+        }
+
+        this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`
+        this.$refs.filter.style[backdrop] = `blur(${blur}px)`
+        if (newVal < this.minTransalteY) {
+          zIndex = 10
+          this.$refs.bgImage.style.paddingTop = 0
+          this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
+          this.$refs.playBtn.style.display = 'none'
+        } else {
+          this.$refs.bgImage.style.paddingTop = '70%'
+          this.$refs.bgImage.style.height = 0
+          this.$refs.playBtn.style.display = ''
+        }
+        this.$refs.bgImage.style[transform] = `scale(${scale})`
+        this.$refs.bgImage.style.zIndex = zIndex
       }
-      this.$refs.filter.style[backdrop] = `blur(${blur}px)`
-      if(newY < this.minTranslateY) {
-        zIndex = 10
-        this.$refs.bgImage.style.paddingTop = 0
-        this.$refs.bgImage.style.height = `${RESERVED_HEIGHT}px`
-        this.$refs.playBtn.style.display = 'none'
-      }else {
-        this.$refs.bgImage.style.paddingTop = '70%'
-        this.$refs.bgImage.style.height = 0
-        this.$refs.playBtn.style.display = ''
-      }
-      this.$refs.bgImage.style.zIndex = zIndex
-      this.$refs.bgImage.style[transform] = `scale(${scale})`
-    }
   },
   components: {
     Scroll,

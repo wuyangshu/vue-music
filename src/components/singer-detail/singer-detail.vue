@@ -8,8 +8,8 @@
 import {mapGetters} from 'vuex'
 import {getSingerDetail} from 'api/singer'
 import {ERR_OK} from 'api/config'
-import {createSong, processSongsUrl} from 'common/js/song'
-import MusicList from '../../components/music-list/music-list'
+import {createSong, isValidMusic, processSongsUrl} from 'common/js/song'
+import MusicList from 'components/music-list/music-list'
 
 
 export default {
@@ -31,13 +31,11 @@ export default {
           songs: []
       }
   },
-      created() 
-      {
+      created() {
           this._getDetail()
         //   console.log(this.singer)
       },
-      methods: {
-          
+      methods: {         
           _getDetail() {
               if(!this.singer.id) {
                   this.$router.push('/singer')
@@ -57,9 +55,9 @@ export default {
               let ret = []
               list.forEach((item) => {
                   let {musicData} = item
-                  if(musicData.songid && musicData.albummid) {
-                      ret.push(createSong(musicData))
-                  }
+                  if (isValidMusic(musicData)) {
+                        ret.push(createSong(musicData))
+                    }
               })
               return ret
           }

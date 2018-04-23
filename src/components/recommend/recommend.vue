@@ -1,22 +1,24 @@
 <template>
   <div class="recommend" ref="recommend">
-      <scroll ref="scroll" class="recommend-content" :data="discList">
-        <div>
+    <scroll ref="scroll" class="recommend-content" :data="discList">
+      <div>
         <div v-if="recommends.length" class="slider-wrapper">
-          <slider>
-            <div v-for="item in recommends">
-              <a :href="item.linkUrl">
-                <img class="needsclick" @load="loadImage" :src="item.picUrl" />
-              </a>
-            </div>
-          </slider>
+          <div class="slider-content">
+            <slider ref="slider">
+              <div v-for="item in recommends">
+                <a :href="item.linkUrl">
+                  <img @load="loadImage" :src="item.picUrl">
+                </a>
+              </div>
+            </slider>
+          </div>
         </div>
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
             <li @click="selectItem(item)" v-for="item in discList" class="item">
               <div class="icon">
-                <img width="60" height="60" v-lazy="item.imgurl" />
+                <img width="60" height="60" v-lazy="item.imgurl">
               </div>
               <div class="text">
                 <h2 class="name" v-html="item.creator.name"></h2>
@@ -25,19 +27,19 @@
             </li>
           </ul>
         </div>
-        </div>
-        <div class="loading-container" v-show="!discList.length">
-          <loading></loading>
-        </div>
-      </scroll>
+      </div>
+      <div class="loading-container" v-show="!discList.length">
+        <loading></loading>
+      </div>
+    </scroll>
     <router-view></router-view>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
-  import Slider from '../../base/slider/slider'
-  import Loading from '../../base/loading/loading'
-  import Scroll from '../../base/scroll/scroll'
+  import Slider from 'base/slider/slider'
+  import Loading from 'base/loading/loading'
+  import Scroll from 'base/scroll/scroll'
   import {getRecommend, getDiscList} from '../../api/recommend'
   import {playlistMixin} from 'common/js/mixin'
   import {ERR_OK} from '../../api/config'
@@ -57,6 +59,11 @@
       //   this._getDiscList()
       // }, 2000)
       this._getDiscList()
+    },
+    activated() {
+      setTimeout(() => {
+        this.$refs.slider && this.$refs.slider.refresh()
+      }, 20)
     },
     methods: {
       handlePlaylist(playlist) {
@@ -86,9 +93,11 @@
         })
       },
       loadImage() {
-        if(!this.checkLoaded) {
-          this.$refs.scroll.refresh()
-          this.checkLoaded = true
+        if (!this.checkloaded) {
+          this.checkloaded = true
+          setTimeout(() => {
+            this.$refs.scroll.refresh()
+          }, 20)
         }
       },
       ...mapMutations({
@@ -105,6 +114,7 @@
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
   @import "~common/stylus/variable"
+
   .recommend
     position: fixed
     width: 100%
@@ -116,7 +126,15 @@
       .slider-wrapper
         position: relative
         width: 100%
+        height: 0
+        padding-top: 40%
         overflow: hidden
+        .slider-content
+          position: absolute
+          top: 0
+          left: 0
+          width: 100%
+          height: 100%
       .recommend-list
         .list-title
           height: 65px

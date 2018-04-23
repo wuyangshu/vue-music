@@ -1,4 +1,4 @@
-import {getLyric, getSongsUrl} from 'api/song'
+import {getLyric, getVKey, getSongsUrl} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
 
@@ -77,3 +77,19 @@ export function processSongsUrl(songs) {
     return songs
   })
 }
+
+// export function processSongsUrl(songs) {
+//     return getSongsUrl(songs).then((res) => {
+//       if (res.code === ERR_OK) {
+//         let urlMid = res.url_mid
+//         if (urlMid && urlMid.code === ERR_OK) {
+//           let midUrlInfo = urlMid.data.midurlinfo
+//           midUrlInfo.forEach((info, index) => {
+//             let song = songs[index]
+//             song.url = `http://dl.stream.qqmusic.qq.com/${info.purl}`
+//           })
+//         }
+//       }
+//       return songs
+//     })
+//   }

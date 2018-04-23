@@ -13,7 +13,7 @@
         </ul>
       </li>
     </ul>
-    <div class="list-shortcut" @touchstart="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove">
+    <div class="list-shortcut" @touchstart.stop.prevent="onShortcutTouchStart" @touchmove.stop.prevent="onShortcutTouchMove" @touchend.stop>
       <ul>
         <li v-for="(item, index) in shortcutList" class="item" :data-index="index" :class="{'current': currentIndex===index}">
           {{item}}
@@ -30,8 +30,8 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import Scroll from '../../base/scroll/scroll'
-  import Loading from '../../base/loading/loading'
+  import Scroll from 'base/scroll/scroll'
+  import Loading from 'base/loading/loading'
   import {getData} from 'common/js/dom'
   import index from 'vue';
 
@@ -104,8 +104,9 @@
         }else if(index > this.listHeight.length - 2) {
           index = this.listHeight.length - 2
         }
-        this.scrollY = -this.listHeight[index]
+        // this.scrollY = -this.listHeight[index]
         this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0)
+        this.scrollY = this.$refs.listview.scroll.y
       },
       _calculateHeight() {
         this.listHeight = []

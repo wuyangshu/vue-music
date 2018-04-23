@@ -1,7 +1,8 @@
-import {commonParams} from './config'
+import {commonParams, options} from './config'
 import { getUid } from 'common/js/uid'
 import axios from 'axios'
 import { ERR_OK } from 'api/config'
+import jsonp from 'common/js/jsonp'
 
 const debug = process.env.NODE_ENV !== 'production'
 
@@ -45,6 +46,13 @@ export function getSongsUrl(songs) {
     needNewCode: 1,
     uin: 0
   })
+
+  return axios.post(url, {
+        comm: data,
+        url_mid: genUrlMid(mids, types)
+      }).then((res) => {
+        return Promise.resolve(res.data)
+       })
 
   return new Promise((resolve, reject) => {
     let tryTime = 3
